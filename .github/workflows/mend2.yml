@@ -1,0 +1,25 @@
+name: Mend CLI Scan
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v3
+        # Add your package manager build here
+
+        - name: Mend CLI Scan
+          env:
+            MEND_EMAIL: gh_scan_manager@mend.io
+            MEND_USER_KEY: 3f24cf238c904671820cbb9095506bcbe3d52c96c3684b538a986afa926d095f
+            MEND_URL: https://saas-eu.mend.io
+          run: |
+            echo Downloading Mend CLI
+            curl -LJO https://downloads.mend.io/production/unified/latest/linux_amd64/mend && chmod +x mend 
+            echo Start Mend CLI scan
+            ./mend dep -u -s "beng_demo_gh2//BenG//CSM_V3" -r
+            ./mend code -s "beng_demo_gh2//BenG//CSM_V3" --snippet-size 0
+            ./mend image ubuntu:latest --scope "beng_demo_gh2//BenG//CSM_V3"
